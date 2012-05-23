@@ -1,0 +1,13 @@
+{
+	"BundleType": "Application",
+	"BundleIdentifier": "huesound",
+	"AppIcon": {
+		"36x18": "huesound.png"
+	},
+	"AppName": {
+		"en": "Huesound"
+	},
+	"SupportedLanguages": [
+		"en"
+	]
+}
