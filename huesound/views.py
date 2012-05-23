@@ -20,16 +20,16 @@ def get_images(color, count):
     green = int(color[2:4], 16) 
     blue = int(color[4:6], 16) 
 
-    query = '''SELECT album_key, icon_url, embed_url 
-                     FROM color_rdio_cube 
-                 ORDER BY cube_distance(color, %s) 
-                    LIMIT %s'''
+    query = '''SELECT album_uri
+                 FROM color_spotify_cube 
+             ORDER BY cube_distance(color, %s) 
+                LIMIT %s'''
     data = (cube.Cube(red, green, blue), count)
     cur.execute(query, data)
 
     result = []
     for row in cur:
-        result.append({ "album_key": row[0], "icon_url" : row[1], "embed_url" : row[2] })
+        result.append({ "album_uri": row[0] })
 
     return result
 

@@ -1,5 +1,5 @@
-#!/usr/local/virtualenv/huesound/bin/python
 #!/usr/bin/env python
+#!/usr/local/virtualenv/huesound/bin/python
 
 import sys
 sys.path.append("../huesound")
@@ -21,7 +21,7 @@ except psycopg2.OperationalError as err:
     print "Cannot connect to database: %s" % err
     exit()
 
-cur.execute('SELECT id, icon_url FROM color_rdio_cube WHERE red < 0');
+cur.execute('SELECT id, icon_url FROM color_spotify_cube WHERE red < 0');
 
 for row in cur:
     try:
@@ -40,7 +40,7 @@ for row in cur:
     lines = out[0].split("\n", 3)
     print "%s: (%s, %s, %s)" % (row[0], ord(lines[3][0]), ord(lines[3][1]), ord(lines[3][2]))
 
-    sql = '''UPDATE color_rdio_cube SET red = %s, green = %s, blue = %s, color = %s::cube WHERE id = %s''';
+    sql = '''UPDATE color_spotify_cube SET red = %s, green = %s, blue = %s, color = %s::cube WHERE id = %s''';
     data = ("%s" % ord(lines[3][0]), 
             "%s" % ord(lines[3][1]), 
             "%s" % ord(lines[3][2]),

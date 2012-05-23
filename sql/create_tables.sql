@@ -10,12 +10,8 @@ CREATE TABLE color_cube (
     red        INTEGER,
     green      INTEGER,
     blue       INTEGER,
-    color      CUBE
-);
-
-CREATE TABLE color_cube_country (
-    color      INTEGER NOT NULL, -- references color_cube.id
-    country    INTEGER NOT NULL  -- references country.id
+    color      CUBE,
+    countries  INTEGER NOT NULL -- references country_string
 );
 
 CREATE TABLE country (
@@ -23,20 +19,37 @@ CREATE TABLE country (
     code       VARCHAR(16)
 );
 
-CREATE UNIQUE INDEX color_cube_album_key_index ON color_cube (album_uri);
-CREATE UNIQUE INDEX color_cube_id_index ON color_cube (id);
-CREATE UNIQUE INDEX country_code_id_index ON country (id);
-CREATE UNIQUE INDEX country_code_index ON country (code);
-CREATE UNIQUE INDEX color_cube_country_color_index ON color_cube_country(color);
-CREATE UNIQUE INDEX color_cube_country_country_index ON color_cube_country(country);
+CREATE TABLE country_string (
+    id         SERIAL,
+    string     TEXT
+);
 
-ALTER TABLE color_cube_country
-    ADD CONSTRAINT color_cube_fk_color
-    FOREIGN KEY (color)
-    REFERENCES color_cube(id);
+CREATE TABLE country_string_country (
+    country_string INTEGER NOT NULL, -- references country_string
+    country        INTEGER NOT NULL  -- references country
+);
 
-ALTER TABLE color_cube_country
-    ADD CONSTRAINT color_cube_fk_country
+CREATE UNIQUE INDEX color_cube_ndx_album_key ON color_cube (album_uri);
+CREATE UNIQUE INDEX color_cube_ndx_id ON color_cube (id);
+CREATE UNIQUE INDEX country_ndx_id ON country (id);
+CREATE UNIQUE INDEX country_ndx_code ON country (code);
+CREATE UNIQUE INDEX country_string_ndx_id ON country_string (id);
+CREATE UNIQUE INDEX country_string_ndx_string ON country_string (string);
+CREATE INDEX country_string_country_ndx_country_string ON country_string_country (country_string);
+CREATE INDEX country_string_country_ndx_country ON country_string_country (country);
+
+ALTER TABLE color_cube
+    ADD CONSTRAINT color_cube_fk_countries
+    FOREIGN KEY (countries)
+    REFERENCES country_string(id);
+
+ALTER TABLE country_string_country
+    ADD CONSTRAINT country_string_country_fk_country_string
+    FOREIGN KEY (country_string)
+    REFERENCES country_string(id);
+
+ALTER TABLE country_string_country
+    ADD CONSTRAINT country_string_country_fk_country
     FOREIGN KEY (country)
     REFERENCES country(id);
 
