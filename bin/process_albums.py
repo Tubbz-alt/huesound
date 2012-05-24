@@ -66,11 +66,11 @@ for row in cur:
 
     sql = '''UPDATE color_cube SET red = %s, green = %s, blue = %s, color = %s::cube, image_id = %s WHERE id = %s''';
     try:
-        print "%s: (%s, %s, %s)" % (row[0], ord(lines[3][0]), ord(lines[3][1]), ord(lines[3][2]))
+        print "%s: (%s, %s, %s)" % (row[0], red, green, blue)
         data = ("%s" % red,
                 "%s" % green, 
                 "%s" % blue,
-                cube.Cube(ord(lines[3][0]), ord(lines[3][1]), ord(lines[3][2])), 
+                cube.Cube(red, green, blue),
                 image_id,
                 row[0])
     except IndexError:
