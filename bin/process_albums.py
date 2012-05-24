@@ -25,6 +25,7 @@ except psycopg2.OperationalError as err:
 cur.execute("SELECT id, album_uri FROM color_cube WHERE image_id IS null")
 for row in cur:
     url = "http://open.spotify.com/album/%s" % row[1][14:]
+    print url
     try:
         f = urllib2.urlopen(url)
     except urllib2.URLError:
@@ -38,7 +39,6 @@ for row in cur:
     image_id = page[start:end]
 
     url = "http://o.scdn.co/300/%s" % image_id
-    print url
     try:
         f = urllib2.urlopen(url)
     except urllib2.URLError:
@@ -52,7 +52,6 @@ for row in cur:
     proc = subprocess.Popen(["pnmscale", "-xsize", "1", "-ysize", "1"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     out = proc.communicate(tmp[0])
 
-    print out
     lines = out[0].split("\n", 3)
 
     sql = '''UPDATE color_cube SET red = %s, green = %s, blue = %s, color = %s::cube, image_id = %s WHERE id = %s''';
