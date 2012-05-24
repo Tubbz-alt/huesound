@@ -9,7 +9,7 @@ import psycopg2;
 import subprocess;
 import re
 from psycopg2.extensions import register_adapter
-from huesound import cube
+from huesound import cube, config
 
 register_adapter(cube.Cube, cube.adapt_cube)
 
@@ -35,7 +35,9 @@ for row in cur:
     page = f.read()
     f.close()
 
-    start, end = re.search("[a-f0-9]{40}", page).span()
+    m = re.search("[a-f0-9]{40}", page)
+    if not m: continue
+    start, end = m.span()
     image_id = page[start:end]
 
     url = "http://o.scdn.co/300/%s" % image_id
