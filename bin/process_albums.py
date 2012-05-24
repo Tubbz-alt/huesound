@@ -22,7 +22,7 @@ except psycopg2.OperationalError as err:
     print "Cannot connect to database: %s" % err
     exit()
 
-cur.execute("SELECT id, album_uri FROM color_cube WHERE image_id IS null")
+cur.execute("SELECT id, album_uri FROM color_cube WHERE image_id IS null ORDER BY id")
 for row in cur:
     url = "http://open.spotify.com/album/%s" % row[1][14:]
     print url
