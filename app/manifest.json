@@ -2,12 +2,17 @@
 	"BundleType": "Application",
 	"BundleIdentifier": "huesound",
 	"AppIcon": {
-		"36x18": "huesound.png"
+		"18x18": "img/huesound-18.png",
+		"64x64": "img/huesound-64.png",
+		"128x128": "img/huesound-128.png"
 	},
 	"AppName": {
 		"en": "Huesound"
 	},
 	"SupportedLanguages": [
 		"en"
-	]
+	],
+        "RequiredPermissions": [
+                "http://huesound.mbsandbox.org"
+        ]
 }

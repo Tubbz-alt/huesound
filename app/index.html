@@ -1,12 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<title>Huesound coverart fetcher</title>
-	<link rel="stylesheet" href="sp://import/css/adam.css">
-	<link rel="stylesheet" href="huesound.css">
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	
+	<title>HueSound</title>
+	<meta name="description" content="">
+	<meta name="author" content="">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<link rel="stylesheet" href="css/style.css?v=2">
+
+	<script src="js/libs/modernizr-1.7.min.js"></script>
 </head>
-<body onload="sp = getSpotifyApi(1); huesound = sp.require('huesound'); huesound.init();">
-<h1 id="header">Aye caramba!</h1>
+<body onload="sp = getSpotifyApi(1); huesound = sp.require('js/huesound'); huesound.init();">
+	<div id="container">
+		<header>
+		</header>
+
+		<div id="main" role="main">
+			<div id="color-wheel"></div>
+			<div id="instructions">
+				<img src="img/logo.png" width="209" height="22" alt="Logo">
+				<div id="instructions_txt">
+					<p>Pick a color on the color wheel. Enjoy the artwork.</p> <p>Click an album cover to start the playlist</p>
+				</div>
+			</div>
+			<div id="albumsContainer">
+				<div id="progress"></div>
+				<ul id="albums">
+				</ul>
+			</div>
+			<div id="large-album">
+			</div>
+		</div>
+
+		<footer>
+			<small>Backend and Spotify port by <a href="http://twitter.com/mayhem" title="Robert Kaye">@mayhem</a>, JS and HTML by <a href="http://github.com/Aeon" title="Anton Stroganov">@Aeon</a>, design by <a href="http://twitter.com/emstar" title="Madhavi Jagdish">@emstar</a>
+				<br/>Source code and report bugs at <a href="http://github.com/mayhem/huesound">github/mayhem/huesound</a></small>
+		</footer>
+	</div>
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js"></script>
+	<script>if(!window.jQuery) { document.write(unescape('%3Cscript src="js/libs/jquery-1.6.min.js"%3E%3C/script%3E')); document.write(unescape('%3Cscript src="js/libs/jquery-ui.min.js"%3E%3C/script%3E')); }</script>
+	<script src="js/libs/raphael.js"></script>
+	<script src="js/libs/g.raphael-min.js"></script>
+	<script src="js/libs/g.pie.js"></script>
+	<script src="js/plugins.js"></script>
 </body>
 </html>
