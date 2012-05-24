@@ -55,13 +55,21 @@ for row in cur:
     out = proc.communicate(tmp[0])
 
     lines = out[0].split("\n", 3)
+    if lines[0] == 'P6':
+        red = ord(lines[3][0])
+        green = ord(lines[3][1])
+        blue = ord(lines[3][2])
+    else:
+        red = ord(lines[3])
+        green = ord(lines[3])
+        blue = ord(lines[3])
 
     sql = '''UPDATE color_cube SET red = %s, green = %s, blue = %s, color = %s::cube, image_id = %s WHERE id = %s''';
     try:
         print "%s: (%s, %s, %s)" % (row[0], ord(lines[3][0]), ord(lines[3][1]), ord(lines[3][2]))
-        data = ("%s" % ord(lines[3][0]), 
-                "%s" % ord(lines[3][1]), 
-                "%s" % ord(lines[3][2]),
+        data = ("%s" % red,
+                "%s" % green, 
+                "%s" % blue,
                 cube.Cube(ord(lines[3][0]), ord(lines[3][1]), ord(lines[3][2])), 
                 image_id,
                 row[0])
