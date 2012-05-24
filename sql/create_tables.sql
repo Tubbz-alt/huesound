@@ -11,7 +11,8 @@ CREATE TABLE color_cube (
     green      INTEGER,
     blue       INTEGER,
     color      CUBE,
-    countries  INTEGER NOT NULL -- references country_string
+    countries  INTEGER NOT NULL -- references country_string,
+    image_id   TEXT
 );
 
 CREATE TABLE country (
