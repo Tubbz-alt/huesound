@@ -1,10 +1,13 @@
 {% extends 'layout.html' %}
 {% block body %}
-  <h2>Rdio icons by color</h2>
-  <iframe name="player" width="300" height="200"></iframe>
+  <h2>Spotify cover art by color</h2>
   <ul>
-  {% for icon in data %}
-       <li><a href="{{ icon.embed_url }}" target="player"><img src="{{ icon.icon_url }}"></a></li>
+  {% for album in data %}
+       <li>
+           <a href="http://open.spotify.com/album/{{ album.album_uri }}">
+              <img src="http://o.scdn.co/300/{{ album.image_id }}">
+           </a>
+       </li>
   {% endfor %}
   </ul>
 {% endblock %}

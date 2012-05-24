@@ -14,9 +14,9 @@ from huesound import cube
 register_adapter(cube.Cube, cube.adapt_cube)
 
 try:
-    conn = psycopg2.connect("dbname=huesound user=huesound host=localhost port=5432")
+    conn = psycopg2.connect(config.PG_CONNECT)
     cur = conn.cursor()
-    conn2 = psycopg2.connect("dbname=huesound user=huesound host=localhost port=5432")
+    conn2 = psycopg2.connect(config.PG_CONNECT)
     out_cur = conn2.cursor()
 except psycopg2.OperationalError as err:
     print "Cannot connect to database: %s" % err
