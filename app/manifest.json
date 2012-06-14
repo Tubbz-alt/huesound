@@ -11,5 +11,8 @@
 	},
 	"SupportedLanguages": [
 		"en"
-	]
+	],
+        "RequiredPermissions": [
+                "http://huesound.mbsandbox.org"
+        ]
 }

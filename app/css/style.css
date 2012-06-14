@@ -92,12 +92,12 @@ a:hover { color: #036; }
 }
 
 footer {
-  text-align: center;
   color: #AAA;
   clear: both;
   position: fixed;
-  top: 650px;
-  width: 100%;
+  left: 50px;
+  top: 550px;
+  width: 350px;
 }
 
 #instructions {
@@ -116,10 +116,10 @@ footer {
 
 #albumsContainer {
   position: fixed;
-  left: 500px;
-  top: 65px;
+  left: 420px;
+  top: 45px;
   width: 700px; /* 6 albums + 5 spacers) */
-  height: 700px;
+  height: 800px;
 }
 
 #albumsContainer {
