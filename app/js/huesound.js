@@ -1,9 +1,11 @@
 var sp = getSpotifyApi(1);
+var models, views;
 
 exports.init = init;
 function init() 
 {
-    var models = sp.require('sp://import/scripts/api/models');
+    models = sp.require('sp://import/scripts/api/models');
+    views = sp.require("sp://import/scripts/api/views");
     coverHack.init(models.session.country);
 }
 
@@ -36,7 +38,6 @@ coverHack = {
             coverHack.view.changeBG(color);
             color = color.replace('#', '');
             coverHack.processing = true;
-            console.log("load albums! " + coverHack.albumAPI.replace(/%color%/, color));
             $.ajax({
                     url: coverHack.albumAPI.replace(/%color%/, color),
                     timeout: 5000,
@@ -50,17 +51,6 @@ coverHack = {
             coverHack.processing = false;
             coverHack.data = data;
             coverHack.view.showAlbums();
-            coverHack.resolveTracks();
-    },
-    resolveTracks: function() {
-            var tracks = [],
-                    i,
-                    j = 0;
-            for(i = 0; i < coverHack.data.length; i++) {
-                    if(coverHack.data[i].embed_url) {
-                            coverHack.view.showPlay(i);
-                    }
-            }
     },
     util: {
             // http://stackoverflow.com/questions/1507931/generate-lighter-darker-color-in-css-using-javascript
@@ -147,7 +137,7 @@ coverHack = {
             }
     },
     view: {
-            albumTpl: '<li id="%i%" data-album="%id%"><img src="spotify:image:%image_id%"></li>',
+            albumTpl: '<li id="%i%"><img src="spotify:image:%image_id%" onclick="coverHack.album_clicked(%i%)"></li>',
             showAlbums: function() {
                     $("#progress" ).hide();
                     var i,
@@ -159,14 +149,11 @@ coverHack = {
                             tpl = coverHack.view.albumTpl;
                             tpl = tpl.replace(/%image_id%/g, album.image_id);
                             tpl = tpl.replace(/%i%/g, i);
-                            tpl = tpl.replace(/%id%/g, album.release);
+                            tpl = tpl.replace(/%id%/g, album.album_uri);
                             albumsHTML.push(tpl);
                     }
                     // insert albums into page
                     $('#albums').html(albumsHTML.join(''));
-
-                    // // show all the covers
-                    // $('#albums li').toggle('puff', {}, 100);
             },
             hideAlbums: function() {
                     $("#progress").show();
@@ -179,16 +166,9 @@ coverHack = {
                     color = coverHack.util.color.lighterColor(color, 0.6);
                     $('body').animate( { backgroundColor: color }, 1000);
             },
-            showPlay: function(albumIndex) {
-                    var albumCover = $('#albums #' + albumIndex);
-                    albumCover.data('rdio', coverHack.data[albumIndex].embed_url);
-                    albumCover.addClass('play');
-                    albumCover.append('<div class="playbtn"></div>');
-                    $('.playbtn', albumCover).fadeIn(500);
-            },
             createColorWheel: function() {
                     var r = Raphael("color-wheel");
-                    var pie = r.g.piechart(250, 310, 150, [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], {colors: coverHack.allColors});
+                    var pie = r.g.piechart(200, 310, 150, [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], {colors: coverHack.allColors});
                     pie.hover(function () {
                             this.sector.stop();
                             this.sector.scale(1.1, 1.1, this.cx, this.cy);
@@ -209,11 +189,21 @@ coverHack = {
                     });
             }
     },
+    album_clicked: function(index) {
+        album_uri = coverHack.data[index].album_uri;
+        models.Album.fromURI(album_uri, function(album) 
+        {
+            models = sp.require("sp://import/scripts/api/models");
+            player = models.player;
+            player.play(album.tracks[0], album, 0);
+        });
+    },
     init: function(country) {
             coverHack.view.createColorWheel();
             coverHack.albumAPI = "http://huesound.mbsandbox.org/%color%/" + coverHack.albumCount + "/" + country + "/j";
             // hook up the play buttons
             $('.play', $('#albums')).live( "click", function(e) {
+                    console.log("click!");
                     $('#play').attr("src", $(this).data('rdio'));
                     $('#large-album').css("background-image", 'url("' + $(this).attr('src') + '")');  
             });
