@@ -216,7 +216,7 @@ coverHack = {
     album_clicked: function(index) {
         album_uri = coverHack.data[index].album_uri;
         window.location.href = album_uri;
-        albumClicked = true;
+        coverHack.albumClicked = true;
     },
     play_clicked: function(album_uri) {
         models.Album.fromURI(album_uri, function(album) 
@@ -236,9 +236,9 @@ coverHack = {
             coverHack.view.createColorWheel();
             coverHack.albumAPI = "http://huesound.mbsandbox.org/%color%/" + coverHack.albumCount + "/" + country + "/j/%offset%";
             $('.play', $('#albums')).live("click", function(e) {
-                if (!albumClicked)
+                if (!coverHack.albumClicked)
                     coverHack.play_clicked($(this).data('album_uri'));
-                albumClicked = false;
+                coverHack.albumClicked = false;
             });
             $('#play').attr("src", "");
     }
