@@ -116,7 +116,7 @@ footer {
 
 #albumsContainer {
   position: fixed;
-  left: 420px;
+  left: 400px;
   top: 45px;
   width: 700px; /* 6 albums + 5 spacers) */
   height: 800px;
@@ -159,8 +159,9 @@ footer {
 
 #albumsContainer .playbtn {
   background-image: url("/img/play-up.png");
-  top: -65px;
-  left: 0px;
+  background-repeat:no-repeat;
+  top: -35px;
+  left: 70px;
   width: 60px;
   height: 60px;
   position: relative;
@@ -169,6 +170,7 @@ footer {
 
 #albumsContainer .playbtn:hover {
   background-image: url("/img/play-over.png");
+  background-repeat:no-repeat;
 }
 
 #large-album {
