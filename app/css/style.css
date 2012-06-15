@@ -117,7 +117,7 @@ footer {
 #albumsContainer {
   position: fixed;
   left: 400px;
-  top: 45px;
+  top: 55px;
   width: 700px; /* 6 albums + 5 spacers) */
   height: 800px;
 }
@@ -181,6 +181,26 @@ footer {
   top: 160px;
   width: 300px;
 }
+
+.nav_button {
+  width: 80px;
+  height: 20px;
+  font-size: 10pt;
+};
+
+.prev_button
+{
+  position: fixed;
+  top: 10px;
+  left: 100px;
+};
+
+.next_button
+{
+  position: fixed;
+  top: 10px;
+  left: 600px;
+};
 
 .ir { display: block; text-indent: -999em; overflow: hidden; background-repeat: no-repeat; text-align: left; direction: ltr; }
 .hidden { display: none; visibility: hidden; }
