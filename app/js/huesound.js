@@ -48,9 +48,14 @@ coverHack = {
             });
     },
     processCovers: function(data) {
+            var tracks = [], i, j = 0;
+
             coverHack.processing = false;
             coverHack.data = data;
             coverHack.view.showAlbums();
+
+            for(i = 0; i < coverHack.data.length; i++) 
+                coverHack.view.showPlay(i);
     },
     util: {
             // http://stackoverflow.com/questions/1507931/generate-lighter-darker-color-in-css-using-javascript
@@ -166,6 +171,13 @@ coverHack = {
                     color = coverHack.util.color.lighterColor(color, 0.6);
                     $('body').animate( { backgroundColor: color }, 1000);
             },
+            showPlay: function(albumIndex) {
+                    var albumCover = $('#albums #' + albumIndex);
+                    albumCover.data('album_uri', coverHack.data[albumIndex].album_uri);
+                    albumCover.addClass('play');
+                    albumCover.append('<div class="playbtn"></div>');
+                    $('.playbtn', albumCover).fadeIn(500);
+            },
             createColorWheel: function() {
                     var r = Raphael("color-wheel");
                     var pie = r.g.piechart(200, 310, 150, [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], {colors: coverHack.allColors});
@@ -198,14 +210,20 @@ coverHack = {
             player.play(album.tracks[0], album, 0);
         });
     },
+    play_clicked: function(album_uri) {
+        models.Album.fromURI(album_uri, function(album) 
+        {
+            models = sp.require("sp://import/scripts/api/models");
+            player = models.player;
+            player.play(album.tracks[0], album, 0);
+        });
+    },
     init: function(country) {
             coverHack.view.createColorWheel();
             coverHack.albumAPI = "http://huesound.mbsandbox.org/%color%/" + coverHack.albumCount + "/" + country + "/j";
-            // hook up the play buttons
             $('.play', $('#albums')).live( "click", function(e) {
-                    console.log("click!");
-                    $('#play').attr("src", $(this).data('rdio'));
-                    $('#large-album').css("background-image", 'url("' + $(this).attr('src') + '")');  
+                    console.log($(this).data('album_uri'));
+                    coverHack.play_clicked($(this).data('album_uri'));
             });
             $('#play').attr("src", "");
     }
