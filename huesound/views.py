@@ -7,7 +7,7 @@ from huesound import cube
 
 register_adapter(cube.Cube, cube.adapt_cube)
 
-def get_images(color, count, country):
+def get_images(color, count, country, offset):
 
     try:
         conn = psycopg2.connect(config.PG_CONNECT)
@@ -26,8 +26,9 @@ def get_images(color, count, country):
                   AND cc.countries = csc.country_string 
                   AND csc.country = (select id from country where code = %s) 
              ORDER BY cube_distance(color, %s) 
-                LIMIT %s"""
-    data = (country, cube.Cube(red, green, blue), count)
+                LIMIT %s
+               OFFSET %s"""
+    data = (country, cube.Cube(red, green, blue), count, offset)
     cur.execute(query, data)
 
     result = []
@@ -38,8 +39,16 @@ def get_images(color, count, country):
 
 @expose('/<color>/<count>/<country>/j')
 def images_json(request, color, count, country):
-    return render_json(get_images(color, count, country))
+    return render_json(get_images(color, count, country, 0))
+
+@expose('/<color>/<count>/<country>/j/<int:offset>')
+def images_json_paged(request, color, count, country, offset):
+    return render_json(get_images(color, count, country, offset))
 
 @expose('/<color>/<count>/<country>/h')
 def images_html(request, color, count, country):
-    return render_template('icons.html', data=get_images(color, count, country))
+    return render_template('icons.html', data=get_images(color, count, country, 0))
+
+@expose('/<color>/<count>/<country>/h/<int:offset>')
+def images_html_paged(request, color, count, country, offset):
+    return render_template('icons.html', data=get_images(color, count, country, offset))
