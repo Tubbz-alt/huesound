@@ -24,6 +24,7 @@ coverHack = {
     imgUrlBase: "",
     albumAPI: "",
     data: null,
+    albumClicked : false,
     fetchCovers: function(color) {
             if(coverHack.firstRun) {
                     $( "#instructions_txt" ).toggle( 'puff', {}, 500, function() {
@@ -203,12 +204,8 @@ coverHack = {
     },
     album_clicked: function(index) {
         album_uri = coverHack.data[index].album_uri;
-        models.Album.fromURI(album_uri, function(album) 
-        {
-            models = sp.require("sp://import/scripts/api/models");
-            player = models.player;
-            player.play(album.tracks[0], album, 0);
-        });
+        window.location.href = album_uri;
+        albumClicked = true;
     },
     play_clicked: function(album_uri) {
         models.Album.fromURI(album_uri, function(album) 
@@ -221,9 +218,10 @@ coverHack = {
     init: function(country) {
             coverHack.view.createColorWheel();
             coverHack.albumAPI = "http://huesound.mbsandbox.org/%color%/" + coverHack.albumCount + "/" + country + "/j";
-            $('.play', $('#albums')).live( "click", function(e) {
-                    console.log($(this).data('album_uri'));
+            $('.play', $('#albums')).live("click", function(e) {
+                if (!albumClicked)
                     coverHack.play_clicked($(this).data('album_uri'));
+                albumClicked = false;
             });
             $('#play').attr("src", "");
     }
