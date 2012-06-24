@@ -23,7 +23,11 @@ except psycopg2.OperationalError as err:
     exit()
 
 while True:    
-    cur.execute("SELECT id, album_uri FROM color_cube WHERE image_id IS null ORDER BY id")
+    cur.execute("""SELECT id, album_uri 
+                     FROM color_cube 
+                    WHERE image_id 
+                       IS null 
+                 ORDER BY id""")
     if cur.rowcount == 0: break
     for row in cur:
         url = "http://open.spotify.com/album/%s" % row[1][14:]
