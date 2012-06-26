@@ -18,6 +18,8 @@ coverHack = {
     allColors: ['#000000', '#CC3333', '#FF3333', '#FF6633', '#FF9933', '#FFCC66', '#FFFF33', '#CCCC33', '#99CC33', '#33CC33', '#009933', '#006633', '#33CC99', '#33CCFF', '#3366CC', '#333399', '#000066', '#663399', '#990099', '#990066', '#FF0066', '#CCCC99', '#996666', '#996633', '#663333', '#CC9966', '#996633', '#663300', '#333300', '#330000', '#333333', '#666666'],
     // 30 gives us a 6x5 grid, looks nice
     albumCount: 30,
+    lastColor:"",
+    lastOffset : 0,
     firstRun: true,
     processing: false,
     local: false,
@@ -25,7 +27,12 @@ coverHack = {
     albumAPI: "",
     data: null,
     albumClicked : false,
-    fetchCovers: function(color) {
+    fetchCovers: function(color, offset) {
+            console.log("color: " + color);
+            if (offset < 0)
+                offset = 0;
+            coverHack.lastColor = color;
+            coverHack.lastOffset = offset;
             if(coverHack.firstRun) {
                     $( "#instructions_txt" ).toggle( 'puff', {}, 500, function() {
                             $( "#albumsContainer" ).show();
@@ -39,8 +46,11 @@ coverHack = {
             coverHack.view.changeBG(color);
             color = color.replace('#', '');
             coverHack.processing = true;
+            url = coverHack.albumAPI;
+            url = url.replace(/%color%/, color),
+            url = url.replace(/%offset%/, offset),
             $.ajax({
-                    url: coverHack.albumAPI.replace(/%color%/, color),
+                    url: url, 
                     timeout: 5000,
                     dataType: "jsonp",
                     jsonp: false,
@@ -198,14 +208,15 @@ coverHack = {
                             }
                     });
                     pie.click(function() {
-                            coverHack.fetchCovers(this.sector.attrs.fill);
+                            offset = 0;
+                            coverHack.fetchCovers(this.sector.attrs.fill, 0);
                     });
             }
     },
     album_clicked: function(index) {
         album_uri = coverHack.data[index].album_uri;
         window.location.href = album_uri;
-        albumClicked = true;
+        coverHack.albumClicked = true;
     },
     play_clicked: function(album_uri) {
         models.Album.fromURI(album_uri, function(album) 
@@ -215,13 +226,19 @@ coverHack = {
             player.play(album.tracks[0], album, 0);
         });
     },
+    next_page: function() {
+        coverHack.fetchCovers(coverHack.lastColor, coverHack.lastOffset + coverHack.albumCount);
+    },
+    prev_page: function() {
+        coverHack.fetchCovers(coverHack.lastColor, coverHack.lastOffset - coverHack.albumCount);
+    },
     init: function(country) {
             coverHack.view.createColorWheel();
-            coverHack.albumAPI = "http://huesound.mbsandbox.org/%color%/" + coverHack.albumCount + "/" + country + "/j";
+            coverHack.albumAPI = "http://huesound.mbsandbox.org/%color%/" + coverHack.albumCount + "/" + country + "/j/%offset%";
             $('.play', $('#albums')).live("click", function(e) {
-                if (!albumClicked)
+                if (!coverHack.albumClicked)
                     coverHack.play_clicked($(this).data('album_uri'));
-                albumClicked = false;
+                coverHack.albumClicked = false;
             });
             $('#play').attr("src", "");
     }
