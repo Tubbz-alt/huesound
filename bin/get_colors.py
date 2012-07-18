@@ -24,7 +24,7 @@ except psycopg2.OperationalError as err:
 
 while True:    
     cur.execute("""SELECT id, album_uri 
-                     FROM color_cube 
+                     FROM album 
                     WHERE image_id 
                        IS null 
                  ORDER BY id""")
@@ -70,7 +70,7 @@ while True:
             green = ord(lines[3])
             blue = ord(lines[3])
 
-        sql = '''UPDATE color_cube SET red = %s, green = %s, blue = %s, color = %s::cube, image_id = %s WHERE id = %s''';
+        sql = '''UPDATE album SET red = %s, green = %s, blue = %s, color = %s::cube, image_id = %s WHERE id = %s''';
         try:
             print "%s: (%s, %s, %s)" % (row[0], red, green, blue)
             data = ("%s" % red,
