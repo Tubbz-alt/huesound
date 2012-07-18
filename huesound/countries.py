@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import sys
-import urllib2
 import json;
 import psycopg2;
 from huesound import config
