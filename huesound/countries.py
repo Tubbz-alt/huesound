@@ -22,5 +22,3 @@ def insert_country_string(cur, album, countries):
     for country in countries.split(' '):
         country_id = get_country_id(cur, country)
         cur.execute('''INSERT INTO album_country VALUES (%s, %s)''', (album, country_id))
-
-    return id

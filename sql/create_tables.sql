@@ -8,7 +8,6 @@ CREATE TABLE album (
     green      INTEGER,
     blue       INTEGER,
     color      CUBE,
-    country    INTEGER NOT NULL, -- references album_country
     image_id   TEXT DEFAULT NULL,
     popularity REAL DEFAULT -1.0
 );

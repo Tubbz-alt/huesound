@@ -21,7 +21,7 @@ def fetch_artist_json(artist_uri):
     f.close();
     return (data, "")
 
-def insert_artist(conn, artist_uri):
+def get_or_insert_artist(conn, artist_uri):
     try:
         cur = conn.cursor()
         cur.execute('''INSERT INTO artist (id, artist_uri) 

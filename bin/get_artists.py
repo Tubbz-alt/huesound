@@ -52,7 +52,7 @@ while True:
                 print json.dumps(data, sort_keys=True, indent = 4);
             continue
 
-        id = artist.insert_artist(conn, artist_uri)
+        id = artist.get_or_insert_artist(conn, artist_uri)
         print "%s -> %d" % (artist_uri, id)
             
     sleep(.1)
