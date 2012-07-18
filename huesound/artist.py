@@ -22,9 +22,6 @@ def fetch_artist_json(artist_uri):
     return (data, "")
 
 def insert_artist(conn, artist_uri):
-
-    print artist_uri
-    # TODO: Check for duplicate key violation
     try:
         cur = conn.cursor()
         cur.execute('''INSERT INTO artist (id, artist_uri) 
@@ -36,5 +33,6 @@ def insert_artist(conn, artist_uri):
     except psycopg2.IntegrityError:
         conn.rollback()
         cur = conn.cursor()
-        row = cur.execute('''SELECT id FROM artist WHERE artist_uri = %s''', (artist_uri,))
+        cur.execute('''SELECT id FROM artist WHERE artist_uri = %s''', (artist_uri,))
+        row = cur.fetchone()
         return row[0]

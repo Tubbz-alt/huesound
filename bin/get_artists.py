@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 #!/usr/local/virtualenv/huesound/bin/python
 
+# This script is intended to move from Spotify schema 1 to schema 2
+# (album top level -> artist top level)
+
 import sys
 sys.path.append("../huesound")
 
@@ -41,5 +44,15 @@ while True:
     if err: 
         print "fetch album %s failed: %s" % (uri, err)
     else:
-        id = artist.insert_artist(conn, data['album']['artist-id'])
+        try:
+            artist_uri = data['album']['artist-id']
+        except KeyError:
+            if data['album']['artist'] != "Various Artists":
+                print "Cannot find artist-id in returned data."
+                print json.dumps(data, sort_keys=True, indent = 4);
+            continue
+
+        id = artist.insert_artist(conn, artist_uri)
+        print "%s -> %d" % (artist_uri, id)
+            
     sleep(.1)
