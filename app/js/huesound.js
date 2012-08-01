@@ -190,8 +190,16 @@ coverHack = {
                     $('.playbtn', albumCover).fadeIn(500);
             },
             createColorWheel: function() {
+                    // TODO: load this after we know the size of our div
                     var r = Raphael("color-wheel");
-                    var pie = r.g.piechart(200, 310, 150, [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], {colors: coverHack.allColors});
+                    var w = 418; //$(".color-wheel").width();
+                    var h = 347; //$(".color-wheel").height();
+                    var margin = 10;
+                    var dia = ((h < w ? h : w) - (margin * 2)) / 2;
+                    var pieh = margin + dia;
+                    var piew = margin + dia;
+                    console.log("w " + w + " h " + h + " d " + dia);
+                    var pie = r.g.piechart(piew, pieh, dia, [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], {colors: coverHack.allColors});
                     pie.hover(function () {
                             this.sector.stop();
                             this.sector.scale(1.1, 1.1, this.cx, this.cy);
