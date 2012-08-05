@@ -1,22 +1,26 @@
 import sys
 import json;
-import psycopg2;
+import psycopg2
+import json
 from time import sleep
 from huesound import artist, config, countries, api_call
+
+VARIOUS_ARTISTS_URI = "spotify:artist:deadbeefisreallynomnom"
 
 def fetch_album_json(album_uri):
     return api_call.api_call("http://ws.spotify.com/lookup/1/?uri=%s" % album_uri)
 
-def insert_album(conn, album_uri, data):
+def insert_album(conn, data):
     """ Caller must have transaction open and catch errors! """
 
+    #print json.dumps(data, sort_keys=True, indent = 4);
     artist_id = artist.get_or_insert_artist(conn, data["album"]["artist-id"])
 
     cur = conn.cursor()
     sql = '''INSERT INTO album (album_uri, artist, red, green, blue, color) 
                   VALUES (%s, %s, -1, -1, -1, '(1000,1000,1000)') RETURNING id''';
 
-    cur.execute(sql, (album_uri, artist_id))
+    cur.execute(sql, (data["album"]["href"], artist_id))
     row = cur.fetchone()
     album_id = row[0]
     countries.insert_country_string(cur, album_id, data['album']['availability']['territories'])
