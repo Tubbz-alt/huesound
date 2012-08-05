@@ -18,6 +18,10 @@ def api_call(url):
                 sys.stdout.write("Requesting data too fast! Sleeping!\n")
                 sleep(5)
                 continue
+            if e.code == 504:
+                sys.stdout.write("Gateway timeout. Sleeping 1 second!\n")
+                sleep(1)
+                continue
             return (None, e)
 
         data = json.loads(f.read())

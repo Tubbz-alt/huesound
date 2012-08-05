@@ -22,6 +22,9 @@ except psycopg2.OperationalError as err:
     print "Cannot connect to database: %s" % err
     exit()
 
+completed = 0
+total = 0
+skipped = 0
 while True:    
     cur.execute("""SELECT id, album_uri 
                      FROM album 
@@ -29,9 +32,9 @@ while True:
                        IS null 
                  ORDER BY id""")
     if cur.rowcount == 0: break
+    total = cur.rowcount
     for row in cur:
         url = "http://open.spotify.com/album/%s" % row[1][14:]
-        print url
         try:
             f = urllib2.urlopen(url)
         except urllib2.URLError:
@@ -72,7 +75,7 @@ while True:
 
         sql = '''UPDATE album SET red = %s, green = %s, blue = %s, color = %s::cube, image_id = %s WHERE id = %s''';
         try:
-            print "%s: (%s, %s, %s)" % (row[0], red, green, blue)
+            print "%s: %s, %s, %s -- %d of %d" % (row[0], red, green, blue, completed, total)
             data = ("%s" % red,
                     "%s" % green, 
                     "%s" % blue,
@@ -80,6 +83,7 @@ while True:
                     image_id,
                     row[0])
         except IndexError:
+            skipped += 1
             continue
 
         try:
@@ -87,3 +91,6 @@ while True:
             conn2.commit()
         except psycopg2.IntegrityError:
             conn2.rollback()
+        completed += 1
+
+print "%d processed, %d skipped." % (completed, skipped)
