@@ -9,6 +9,10 @@ function init()
     coverHack.init(models.session.country);
 }
 
+resize = function() {
+    coverHack.resizeColorWheel();
+};
+
 mbalbums = function(data) 
 {
     coverHack.processCovers(data);
@@ -27,6 +31,10 @@ coverHack = {
     albumAPI: "",
     data: null,
     albumClicked : false,
+    r_page: null,
+    colorWheelOffsetY : 0,
+    colorWheelOffsetX : 0,
+    colorWheelDia : 0,
     fetchCovers: function(color, offset) {
             console.log("color: " + color);
             if (offset < 0)
@@ -189,17 +197,24 @@ coverHack = {
                     albumCover.append('<div class="playbtn"></div>');
                     $('.playbtn', albumCover).fadeIn(500);
             },
+            calculateColorWheelDims: function () {
+                    var w = $("#color-wheel").width();
+                    var h = $("#color-wheel").height();
+                    console.log("w " +  w + " h " + h);
+                    var margin = 20;
+                    coverHack.colorWheelDia = w / 2 - margin;
+                    coverHack.colorWheelOffsetY = coverHack.colorWheelDia + margin;
+                    coverHack.colorWheelOffsetX = coverHack.colorWheelDia + margin;
+                    //console.log("x " + coverHack.colorWheelOffsetX + " y " + coverHack.colorWheelOffsetY + " d " + coverHack.colorWheelDia);
+            },
             createColorWheel: function() {
-                    // TODO: load this after we know the size of our div
-                    var r = Raphael("color-wheel");
-                    var w = 418; //$(".color-wheel").width();
-                    var h = 347; //$(".color-wheel").height();
-                    var margin = 10;
-                    var dia = ((h < w ? h : w) - (margin * 2)) / 2;
-                    var pieh = margin + dia;
-                    var piew = margin + dia;
-                    console.log("w " + w + " h " + h + " d " + dia);
-                    var pie = r.g.piechart(piew, pieh, dia, [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], {colors: coverHack.allColors});
+                    coverHack.view.calculateColorWheelDims();
+                    r_page = Raphael("color-wheel");
+                    var pie = r_page.g.piechart(coverHack.colorWheelOffsetX, 
+                                                coverHack.colorWheelOffsetY, 
+                                                coverHack.colorWheelDia, 
+                                                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], 
+                                                {colors: coverHack.allColors});
                     pie.hover(function () {
                             this.sector.stop();
                             this.sector.scale(1.1, 1.1, this.cx, this.cy);
@@ -219,6 +234,11 @@ coverHack = {
                             offset = 0;
                             coverHack.fetchCovers(this.sector.attrs.fill, 0);
                     });
+                    //$("#color-wheel").resize(resize);
+            },
+            resizeColorWheel: function() {
+                    coverHack.view.calculateColorWheelDims();
+                    r_page.setSize(coverHack.colorWheelOffsetX, coverHack.colorWheelOffsetY);
             }
     },
     album_clicked: function(index) {
@@ -242,6 +262,10 @@ coverHack = {
     },
     init: function(country) {
             coverHack.view.createColorWheel();
+//            $("#color-wheel").bind("click", function() {
+//                 console.log("color wheel load function called.");
+//                 coverHack.view.resizeColorWheel();
+//            });
             coverHack.albumAPI = "http://huesound.mbsandbox.org/%color%/" + coverHack.albumCount + "/" + country + "/j/%offset%";
             $('.play', $('#albums')).live("click", function(e) {
                 if (!coverHack.albumClicked)
