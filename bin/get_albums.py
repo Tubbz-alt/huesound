@@ -8,11 +8,15 @@ import urllib
 import psycopg2
 import json;
 from time import sleep
-from huesound import album, config, api_call
+from huesound import album, artist, config, api_call
+
+#TODO: to not query spotify:artist:deadbeefisreallynomnom
 
 def get_albums(conn, artist_uri):
     added = 0;
     exist = 0;
+
+    if artist_uri == artist.VARIOUS_ARTISTS_URI: return (0,0)
 
     data, e = api_call.api_call("http://ws.spotify.com/lookup/1/?uri=%s&extras=albumdetail" % artist_uri)
     if e:
@@ -20,18 +24,21 @@ def get_albums(conn, artist_uri):
         return (-1, -1)
 
     count = 0
-    for al in data['artist']['albums']:
-        count += 1
-        try:
-            artist_uri = al['album']['artist-id']
-        except KeyError:
-            artist_uri = album.VARIOUS_ARTISTS_URI
-            al["album"]["artist-id"] = artist_uri
-        if not album.album_exists(conn, al['album']['href']):
-            album.insert_album(conn, al)
-            added += 1
-        else:
-            exist += 1
+    try:
+        for al in data['artist']['albums']:
+            count += 1
+            try:
+                artist_uri = al['album']['artist-id']
+            except KeyError:
+                artist_uri = artist.VARIOUS_ARTISTS_URI
+                al["album"]["artist-id"] = artist_uri
+            if not album.album_exists(conn, al['album']['href']):
+                album.insert_album(conn, al)
+                added += 1
+            else:
+                exist += 1
+    except KeyError:
+        return (0, 0)
 
     return (added, exist)
 
@@ -54,7 +61,9 @@ for row in cur.fetchall():
     print "%s: " % artist_uri,
     try:
         added_tmp, exist_tmp = get_albums(ins, artist_uri)
-        if added_tmp < 0: continue
+        if added_tmp < 0: 
+            print "added tmp < 0"
+            continue
         cur_ins = ins.cursor()
         cur_ins.execute("""UPDATE artist
                               SET last_updated = now()

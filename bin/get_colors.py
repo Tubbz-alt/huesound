@@ -45,7 +45,10 @@ while True:
         f.close()
 
         m = re.search("[a-f0-9]{40}", page)
-        if not m: continue
+        if not m: 
+            print "Could not find image id. Skipping %s" % row[1]
+            skipped += 1
+            continue
         start, end = m.span()
         image_id = page[start:end]
 
@@ -57,6 +60,7 @@ while True:
             continue
 
         proc = subprocess.Popen(["jpegtopnm"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # catch socket.error: [Errno 104] Connection reset by peer
         tmp = proc.communicate(f.read())
         f.close();
 
@@ -83,6 +87,7 @@ while True:
                     image_id,
                     row[0])
         except IndexError:
+            print "Internal error. Skipping %s" % row[1]
             skipped += 1
             continue
 

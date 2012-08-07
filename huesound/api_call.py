@@ -5,6 +5,8 @@ import psycopg2;
 from time import sleep
 from huesound import artist, config, countries
 
+TIMEOUT = 30
+
 def api_call(url):
 
     while True:
@@ -12,8 +14,8 @@ def api_call(url):
             opener = urllib2.build_opener()
             opener.addheaders = [('Accept', 'application/json'), 
                                  ('User-agent', '%s' % config.USER_AGENT)]
-            f = opener.open(url)
-        except urllib2.URLError, e:
+            f = opener.open(url, timeout=TIMEOUT)
+        except urllib2.HTTPError, e:
             if e.code == 403:
                 sys.stdout.write("Requesting data too fast! Sleeping!\n")
                 sleep(5)
@@ -22,6 +24,13 @@ def api_call(url):
                 sys.stdout.write("Gateway timeout. Sleeping 1 second!\n")
                 sleep(1)
                 continue
+            return (None, e)
+        except urllib2.URLError, e:
+            if isinstance(e.reason, socket.timeout):
+                continue
+            else:
+                raise
+            print "URLError: ", e.reason
             return (None, e)
 
         data = json.loads(f.read())

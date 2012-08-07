@@ -5,8 +5,6 @@ import json
 from time import sleep
 from huesound import artist, config, countries, api_call
 
-VARIOUS_ARTISTS_URI = "spotify:artist:deadbeefisreallynomnom"
-
 def fetch_album_json(album_uri):
     return api_call.api_call("http://ws.spotify.com/lookup/1/?uri=%s" % album_uri)
 
