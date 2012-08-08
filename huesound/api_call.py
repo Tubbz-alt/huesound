@@ -1,7 +1,8 @@
 import sys
 import urllib2
 import json;
-import psycopg2;
+import psycopg2
+import socket
 from time import sleep
 from huesound import artist, config, countries
 
@@ -28,11 +29,16 @@ def api_call(url):
         except urllib2.URLError, e:
             if isinstance(e.reason, socket.timeout):
                 continue
-            else:
-                raise
+            print "URLError: ", e.reason
+            return (None, e)
+        
+        try:
+            data = json.loads(f.read())
+        except urllib2.URLError, e:
+            if isinstance(e.reason, socket.timeout):
+                continue
             print "URLError: ", e.reason
             return (None, e)
 
-        data = json.loads(f.read())
         f.close();
         return (data, "")

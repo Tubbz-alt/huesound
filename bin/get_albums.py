@@ -10,8 +10,6 @@ import json;
 from time import sleep
 from huesound import album, artist, config, api_call
 
-#TODO: to not query spotify:artist:deadbeefisreallynomnom
-
 def get_albums(conn, artist_uri):
     added = 0;
     exist = 0;
@@ -61,9 +59,7 @@ for row in cur.fetchall():
     print "%s: " % artist_uri,
     try:
         added_tmp, exist_tmp = get_albums(ins, artist_uri)
-        if added_tmp < 0: 
-            print "added tmp < 0"
-            continue
+        if added_tmp < 0: continue
         cur_ins = ins.cursor()
         cur_ins.execute("""UPDATE artist
                               SET last_updated = now()
