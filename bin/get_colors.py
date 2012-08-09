@@ -14,6 +14,8 @@ from huesound import cube, config
 
 register_adapter(cube.Cube, cube.adapt_cube)
 
+COUNT = 250 
+
 try:
     conn = psycopg2.connect(config.PG_CONNECT)
     cur = conn.cursor()
@@ -23,18 +25,15 @@ except psycopg2.OperationalError as err:
     print "Cannot connect to database: %s" % err
     exit()
 
-completed = 0
-total = 0
-skipped = 0
 while True:    
     cur.execute("""SELECT id, album_uri 
                      FROM album 
                     WHERE image_id 
                        IS null 
                       AND red != -2
-                 ORDER BY id""")
+                 ORDER BY id
+                    LIMIT %s""", (COUNT,))
     if cur.rowcount == 0: break
-    total = cur.rowcount
     for row in cur:
         url = "http://open.spotify.com/album/%s" % row[1][14:]
         try:
@@ -54,7 +53,6 @@ while True:
         m = re.search("[a-f0-9]{40}", page)
         if not m: 
             print "Could not find image id. Skipping %s" % row[1]
-            skipped += 1
             sql = '''UPDATE album SET red = -2, green = -2, blue = -2 WHERE id = %s''';
             data = (row[0],)
 
@@ -94,7 +92,7 @@ while True:
 
             sql = '''UPDATE album SET red = %s, green = %s, blue = %s, color = %s::cube, image_id = %s WHERE id = %s''';
             try:
-                print "%s: %s, %s, %s -- %d of %d" % (row[0], red, green, blue, completed, total)
+                print "%s: %s, %s, %s" % (row[0], red, green, blue)
                 data = ("%s" % red,
                         "%s" % green, 
                         "%s" % blue,
@@ -103,9 +101,7 @@ while True:
                         row[0])
             except IndexError:
                 print "Internal error. Skipping %s" % row[1]
-                skipped += 1
                 continue
-            completed += 1
 
         try:
             out_cur.execute(sql, data)
@@ -113,4 +109,14 @@ while True:
         except psycopg2.IntegrityError:
             conn2.rollback()
 
-print "%d processed, %d skipped." % (completed, skipped)
+    cur.execute("""SELECT count(*)
+                     FROM album 
+                    WHERE image_id 
+                       IS null 
+                      AND red != -2""")
+    remaining = cur.fetchone()[0]
+    cur.execute("""SELECT count(*) FROM album """)
+    total = cur.fetchone()[0]
+    print "Processed %d rows, %d of %d complete (%d%%)" % (COUNT, total - remaining, total, int(((total - remaining) * 100 / total)))
+
+print "Processed all images."
