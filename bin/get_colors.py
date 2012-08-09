@@ -10,11 +10,11 @@ import subprocess
 import re
 import socket
 from psycopg2.extensions import register_adapter
-from huesound import cube, config
+from huesound import cube, config, api_call
 
 register_adapter(cube.Cube, cube.adapt_cube)
 
-COUNT = 250 
+COUNT = 100 
 
 try:
     conn = psycopg2.connect(config.PG_CONNECT)
@@ -26,6 +26,18 @@ except psycopg2.OperationalError as err:
     exit()
 
 while True:    
+    cur.execute("""SELECT count(*)
+                     FROM album 
+                    WHERE image_id 
+                       IS null 
+                      AND red != -2""")
+    remaining = cur.fetchone()[0]
+    cur.execute("""SELECT count(*) FROM album """)
+    total = cur.fetchone()[0]
+    print
+    print "%d of %d complete (%d%%)" % (total - remaining, total, int(((total - remaining) * 100 / total)))
+    print
+
     cur.execute("""SELECT id, album_uri 
                      FROM album 
                     WHERE image_id 
@@ -37,9 +49,10 @@ while True:
     for row in cur:
         url = "http://open.spotify.com/album/%s" % row[1][14:]
         try:
-            f = urllib2.urlopen(url)
+            f = urllib2.urlopen(url, timeout=api_call.TIMEOUT)
         except urllib2.URLError, e:
             if isinstance(e.reason, socket.timeout):
+                print "timeout!"
                 continue
             print "Cannot fetch open page: %s" % row[1]
             continue
@@ -62,12 +75,13 @@ while True:
 
             url = "http://o.scdn.co/300/%s" % image_id
             try:
-                f = urllib2.urlopen(url)
+                f = urllib2.urlopen(url, timeout=api_call.TIMEOUT)
             except urllib2.HTTPError, e:
                 print "Cannot fetch image %s: %s" % (row[1], e)
                 continue
             except urllib2.URLError, e:
                 if isinstance(e.reason, socket.timeout):
+                    print "timeout!"
                     continue
                 print "Cannot fetch image: %s" % row[1]
                 continue
@@ -109,14 +123,5 @@ while True:
         except psycopg2.IntegrityError:
             conn2.rollback()
 
-    cur.execute("""SELECT count(*)
-                     FROM album 
-                    WHERE image_id 
-                       IS null 
-                      AND red != -2""")
-    remaining = cur.fetchone()[0]
-    cur.execute("""SELECT count(*) FROM album """)
-    total = cur.fetchone()[0]
-    print "Processed %d rows, %d of %d complete (%d%%)" % (COUNT, total - remaining, total, int(((total - remaining) * 100 / total)))
 
 print "Processed all images."

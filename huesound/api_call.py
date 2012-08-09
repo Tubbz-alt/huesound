@@ -34,9 +34,12 @@ def api_call(url):
         
         try:
             data = json.loads(f.read())
+        except socket.timeout:
+            continue
+        except urllib2.HTTPError, e:
+            print "HTTPError: ", e.code
+            return (None, e)
         except urllib2.URLError, e:
-            if isinstance(e.reason, socket.timeout):
-                continue
             print "URLError: ", e.reason
             return (None, e)
 
