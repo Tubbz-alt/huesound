@@ -1,5 +1,4 @@
 html {
-    height: 100%;
 }
 #instructions {
     margin: .5em;
@@ -11,7 +10,6 @@ html {
 }
 
 #color-wheel {
-    min-height: 400px;
 }
 
 #footer {
@@ -19,7 +17,4 @@ html {
 }
 
 #albumsContainer {
-    margin-left: 0px;
-    margin-right: 0px;
-    height: 500px;
 }
