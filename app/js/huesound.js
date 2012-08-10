@@ -261,11 +261,18 @@ coverHack = {
         coverHack.fetchCovers(coverHack.lastColor, coverHack.lastOffset - coverHack.albumCount);
     },
     init: function(country) {
+            console.log("cont: " + $(document).height());
+            console.log("inst: " + $("#instructions").height());
+            console.log("cw: " + $("#color-wheel-container").height());
+            console.log("footer: " + $("#footer-container").height());
+            h = $(window).height() - ($("#instructions").height() + $("#footer-container").height());
+            console.log("new height: " + h);
+            $("#color-wheel").height(h);
+
             coverHack.view.createColorWheel();
-//            $("#color-wheel").bind("click", function() {
-//                 console.log("color wheel load function called.");
-//                 coverHack.view.resizeColorWheel();
-//            });
+            $("#color-wheel").bind("click", function() {
+                console.log("cont: " + $(document).height());
+            });
             coverHack.albumAPI = "http://huesound.mbsandbox.org/%color%/" + coverHack.albumCount + "/" + country + "/j/%offset%";
             $('.play', $('#albums')).live("click", function(e) {
                 if (!coverHack.albumClicked)
