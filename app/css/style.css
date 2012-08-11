@@ -1,12 +1,16 @@
-html {
-}
-#instructions {
-    margin: .5em;
+#instructions-container {
     text-align: center;
 }
 #instructions-text {
-    margin-top: .5em;
+    padding: 1.5em .75em .75em .75em;
     text-align: center;
+}
+#logo {
+    margin-bottom: .75em;
+}
+
+#footer {
+    margin: .75em;
 }
 
 #color-wheel {
@@ -17,4 +21,21 @@ html {
 }
 
 #albumsContainer {
+    padding-top: 15px;
 }
+
+#albumsContainer #progress {
+  background-image: url("/img/ajax-loader.gif");
+  display: block;
+}
+
+#albumsContainer ul {
+  list-style: none;
+  margin: 0;
+}
+
+#albumsContainer li {
+  float: left;
+  margin: 5px;
+}
+

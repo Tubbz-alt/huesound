@@ -158,18 +158,34 @@ coverHack = {
             }
     },
     view: {
-            albumTpl: '<li id="%i%"><img src="spotify:image:%image_id%" onclick="coverHack.album_clicked(%i%)"></li>',
+            imageSize :function() {
+                    w = $("#albumsContainer").width();
+                    h = $("#albumsContainer").height();
+                    if (w < h)
+                        size = Math.floor((w - (10 * 6) - 15) / 6);
+                    else
+                        size = Math.floor((h - (10 * 5) - 15) / 5);
+                    console.log("w: " + w + " h: " + h + "s: " + size);
+                    return size;
+            },
+            albumTpl: '<li id="%i%">' 
+                     +'  <img src="spotify:image:%image_id%" id="img%i%"' 
+                     +'       style="width: %size%px; height: %size%px;" onclick="coverHack.album_clicked(%i%)">'
+                     +'</li>',
             showAlbums: function() {
                     $("#progress" ).hide();
+
                     var i,
                             album,
                             tpl,
                             albumsHTML = [];
+                    album_size = coverHack.view.imageSize();
                     for(i = 0; i < coverHack.data.length; i++) {
                             album = coverHack.data[i];
                             tpl = coverHack.view.albumTpl;
                             tpl = tpl.replace(/%image_id%/g, album.image_id);
                             tpl = tpl.replace(/%i%/g, i);
+                            tpl = tpl.replace(/%size%/g, album_size);
                             tpl = tpl.replace(/%id%/g, album.album_uri);
                             albumsHTML.push(tpl);
                     }
@@ -194,10 +210,20 @@ coverHack = {
                     albumCover.append('<div class="playbtn"></div>');
                     $('.playbtn', albumCover).fadeIn(500);
             },
+            resize: function() {
+                    $("#color-wheel").height($(window).height() - ($("#instructions-container").height() + $("#footer-container").height()));
+                    $("#albumsContainer").height($(window).height());
+                    album_size = coverHack.view.imageSize();
+                    for(i = 0; i < coverHack.albumCount; i++) {
+                        $("#img" + i).css("width", album_size);
+                        $("#img" + i).css("height", album_size);
+                    }
+                    coverHack.view.createColorWheel();
+            },
             calculateColorWheelDims: function () {
                     var w = $("#color-wheel").width();
                     var h = $("#color-wheel").height();
-                    var margin = 20;
+                    var margin = 40;
                     coverHack.colorWheelDia = w / 2 - margin;
                     coverHack.colorWheelOffsetY = coverHack.colorWheelDia + margin;
                     coverHack.colorWheelOffsetX = coverHack.colorWheelDia + margin;
@@ -238,12 +264,6 @@ coverHack = {
                             coverHack.fetchCovers(this.sector.attrs.fill, 0);
                     });
                     coverHack.pie = pie;
-            },
-            resize: function() {
-                    console.log("Resize called!");
-                    $("#color-wheel").height($(window).height() - ($("#instructions-container").height() + $("#footer-container").height()));
-                    $("#albumsContainer").height($(window).height());
-                    coverHack.view.createColorWheel();
             }
     },
     album_clicked: function(index) {
