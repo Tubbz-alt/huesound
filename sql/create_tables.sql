@@ -9,7 +9,8 @@ CREATE TABLE album (
     blue       INTEGER,
     color      CUBE,
     image_id   TEXT DEFAULT NULL,
-    popularity REAL DEFAULT -1.0
+    popularity REAL DEFAULT -1.0,
+    last_updated  TIMESTAMP WITH TIME ZONE DEFAULT to_timestamp((0)::double precision)
 );
 
 CREATE TABLE artist (
@@ -17,7 +18,7 @@ CREATE TABLE artist (
     artist_uri    TEXT,
     genre         TEXT,
     popularity    REAL DEFAULT -1.0,
-    last_updated  TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    last_updated  TIMESTAMP WITH TIME ZONE DEFAULT to_timestamp((0)::double precision)
 );
 
 CREATE TABLE country (

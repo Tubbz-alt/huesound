@@ -50,23 +50,35 @@ while True:
         url = "http://open.spotify.com/album/%s" % row[1][14:]
         try:
             f = urllib2.urlopen(url, timeout=api_call.TIMEOUT)
-        except urllib2.URLError, e:
-            if isinstance(e.reason, socket.timeout):
+        except urllib2.HTTPError, e:
+            if hasattr(e, 'reason') and isinstance(e.reason, socket.timeout):
                 print "timeout!"
                 continue
-            print "Cannot fetch open page: %s" % row[1]
+            print "Cannot fetch open page %s: %s" % (row[1], e)
             continue
-        except urllib2.HTTPError, e:
+        except urllib2.URLError, e:
             print "Cannot fetch open page %s: %s" % (row[1], e)
             continue
 
-        page = f.read()
+        try:
+            page = f.read()
+        except socket.timeout:
+            print "timeout!"
+            continue
+        except socket.error:
+            continue
+        except urllib2.HTTPError, e:
+            print "HTTPError: ", e.code
+            continue
+        except urllib2.URLError, e:
+            print "URLError: ", e.reason
+            continue
         f.close()
 
         m = re.search("[a-f0-9]{40}", page)
         if not m: 
             print "Could not find image id. Skipping %s" % row[1]
-            sql = '''UPDATE album SET red = -2, green = -2, blue = -2 WHERE id = %s''';
+            sql = '''UPDATE album SET red = -2, green = -2, blue = -2, last_updated = now() WHERE id = %s''';
             data = (row[0],)
 
         else:
@@ -77,13 +89,13 @@ while True:
             try:
                 f = urllib2.urlopen(url, timeout=api_call.TIMEOUT)
             except urllib2.HTTPError, e:
+                if hasattr(e, 'reason') and isinstance(e.reason, socket.timeout):
+                    print "timeout!"
+                    continue
                 print "Cannot fetch image %s: %s" % (row[1], e)
                 continue
             except urllib2.URLError, e:
-                if isinstance(e.reason, socket.timeout):
-                    print "timeout!"
-                    continue
-                print "Cannot fetch image: %s" % row[1]
+                print "Cannot fetch image %s: %s" % (row[1], e)
                 continue
 
             proc = subprocess.Popen(["jpegtopnm"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -104,7 +116,8 @@ while True:
                 green = ord(lines[3])
                 blue = ord(lines[3])
 
-            sql = '''UPDATE album SET red = %s, green = %s, blue = %s, color = %s::cube, image_id = %s WHERE id = %s''';
+            sql = '''UPDATE album SET red = %s, green = %s, blue = %s, color = %s::cube, image_id = %s, last_updated = now() 
+                      WHERE id = %s''';
             try:
                 print "%s: %s, %s, %s" % (row[0], red, green, blue)
                 data = ("%s" % red,
