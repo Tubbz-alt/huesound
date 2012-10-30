@@ -10,6 +10,8 @@ import json;
 from time import sleep
 from huesound import album, artist, config, api_call
 
+COUNT = 1000 # max number of artists to process
+
 def get_albums(conn, artist_uri):
     added = 0;
     exist = 0;
@@ -53,7 +55,10 @@ exist = 0
 cur = conn.cursor()
 cur.execute("""SELECT artist_uri  
                  FROM artist 
-             ORDER BY last_updated""")
+                WHERE now() - last_updated > '1 week'::interval
+             ORDER BY last_updated
+                LIMIT %s""", (COUNT,))
+print "%s artists to process" % cur.rowcount
 for row in cur.fetchall():
     artist_uri = row[0]
     print "%s: " % artist_uri,
@@ -73,4 +78,4 @@ for row in cur.fetchall():
     added = added + added_tmp
     exits = exist + exist_tmp
 
-print "Done. %d added, %d albums exist" % (added, exist)
+print "Done. Processed %s artists. %d albums added, %d albums existed" % (COUNT, added, exist)

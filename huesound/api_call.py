@@ -17,6 +17,9 @@ def api_call(url):
                                  ('User-agent', '%s' % config.USER_AGENT)]
             f = opener.open(url, timeout=TIMEOUT)
         except urllib2.HTTPError, e:
+            if hasattr(e, 'reason') and isinstance(e.reason, socket.timeout):
+                print "timeout!"
+                continue
             if e.code == 403:
                 sys.stdout.write("Requesting data too fast! Sleeping!\n")
                 sleep(5)
@@ -27,14 +30,17 @@ def api_call(url):
                 continue
             return (None, e)
         except urllib2.URLError, e:
-            if isinstance(e.reason, socket.timeout):
+            if hasattr(e, 'reason') and isinstance(e.reason, socket.timeout):
+                print "timeout!"
                 continue
-            print "URLError: ", e.reason
+            print "Cannot make api call: %s" % e
             return (None, e)
         
         try:
             data = json.loads(f.read())
         except socket.timeout:
+            continue
+        except socket.error:
             continue
         except urllib2.HTTPError, e:
             print "HTTPError: ", e.code
