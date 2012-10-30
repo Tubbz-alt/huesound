@@ -159,14 +159,27 @@ coverHack = {
     },
     view: {
             imageSize :function() {
-                    w = $("#albumsContainer").width();
-                    h = $("#albumsContainer").height();
+                    console.log("screen w: " + $(window).width() + " screen h: " + $(window).height() + "col " + $("#left-column").width());
+                    w = $(window).width() - $("#left-column").width();
+                    h = $(window).height();
                     if (w < h)
                         size = Math.floor((w - (10 * 6) - 15) / 6);
                     else
                         size = Math.floor((h - (10 * 5) - 15) / 5);
-                    console.log("w: " + w + " h: " + h + "s: " + size);
+                    console.log("max w: " + w + " max h: " + h + " album s: " + size);
                     return size;
+            },
+            setContainerSize: function(image_size) {
+                    w = ((image_size + 10) * 6) + 15;
+                    max_w = $(window).width() - $("#left-column").width();
+                    if (w > max_w) w = max_w;
+                    $("#albumsContainer").width(w);
+
+                    h = ((image_size + 10) * 5) + 15;
+                    max_h = $(window).height();
+                    if (h > max_h) h = max_h;
+                    $("#albumsContainer").height(h);
+                    console.log("w: " + w + " h: " + h);
             },
             albumTpl: '<li id="%i%">' 
                      +'  <img src="spotify:image:%image_id%" id="img%i%"' 
@@ -180,6 +193,7 @@ coverHack = {
                             tpl,
                             albumsHTML = [];
                     album_size = coverHack.view.imageSize();
+                    coverHack.view.setContainerSize(album_size);
                     for(i = 0; i < coverHack.data.length; i++) {
                             album = coverHack.data[i];
                             tpl = coverHack.view.albumTpl;
@@ -212,12 +226,12 @@ coverHack = {
             },
             resize: function() {
                     $("#color-wheel").height($(window).height() - ($("#instructions-container").height() + $("#footer-container").height()));
-                    $("#albumsContainer").height($(window).height());
                     album_size = coverHack.view.imageSize();
                     for(i = 0; i < coverHack.albumCount; i++) {
                         $("#img" + i).css("width", album_size);
                         $("#img" + i).css("height", album_size);
                     }
+                    coverHack.view.setContainerSize(album_size);
                     coverHack.view.createColorWheel();
             },
             calculateColorWheelDims: function () {
@@ -231,7 +245,6 @@ coverHack = {
             createColorWheel: function() {
                     coverHack.view.calculateColorWheelDims();
                     if (coverHack.pie) {
-                        console.log("delete old!");
                         delete(coverHack.pie);
                         delete(coverHack.r_page);
                         coverHack.pie = null;
