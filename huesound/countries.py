@@ -3,7 +3,7 @@
 import sys
 import json;
 import psycopg2;
-from huesound import config
+import config
 
 def get_country_id(cur, country):
     cur.execute('''SELECT id

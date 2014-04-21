@@ -4,12 +4,12 @@ import sys
 import urllib
 import json;
 import psycopg2;
-from huesound import config
+import config, api_call
 
-VARIOUS_ARTISTS_URI = "spotify:artist:deadbeefisreallynomnom"
+VARIOUS_ARTISTS_URI = "spotify:artist:deadbeef"
 
 def fetch_artist_json(artist_uri):
-    return api_call.api_call("http://ws.spotify.com/lookup/1/?uri=%s&extras=albumdetail" % urllib.quote_plus(artist_uri))
+    return api_call.api_call("http://ws.spotify.com/lookup/1/?uri=%s" % artist_uri)
 
 def get_or_insert_artist(conn, artist_uri):
     cur = conn.cursor()

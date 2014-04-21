@@ -4,7 +4,7 @@ import json;
 import psycopg2
 import socket
 from time import sleep
-from huesound import artist, config, countries
+import artist, config, countries
 
 TIMEOUT = 30
 

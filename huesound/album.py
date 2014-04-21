@@ -3,9 +3,9 @@ import json;
 import psycopg2
 import json
 from time import sleep
-from huesound import artist, config, countries, api_call
+import artist, config, countries, api_call
 
-def fetch_album_json(album_uri):
+def fetch_json_for_uri(album_uri):
     return api_call.api_call("http://ws.spotify.com/lookup/1/?uri=%s" % album_uri)
 
 def insert_album(conn, data):

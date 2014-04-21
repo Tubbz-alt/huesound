@@ -16,6 +16,7 @@ from huesound import config, artist, api_call
 def fetch_album_json(album_uri):
     return api_call.api_call("http://ws.spotify.com/lookup/1/?uri=%s" % 
                              urllib.quote_plus(album_uri))
+
 try:
     conn = psycopg2.connect(config.PG_CONNECT)
     cur = conn.cursor()

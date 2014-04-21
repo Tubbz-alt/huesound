@@ -59,6 +59,9 @@ while True:
         except urllib2.URLError, e:
             print "Cannot fetch open page %s: %s" % (row[1], e)
             continue
+        except socket.timeout:
+            print "timeout fetching album page"
+            continue
 
         try:
             page = f.read()
