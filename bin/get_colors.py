@@ -100,6 +100,9 @@ while True:
             except urllib2.URLError, e:
                 print "Cannot fetch image %s: %s" % (row[1], e)
                 continue
+            except socket.timeout:
+                print "timeout fetching album cover"
+                continue
 
             proc = subprocess.Popen(["jpegtopnm"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             # catch socket.error: [Errno 104] Connection reset by peer

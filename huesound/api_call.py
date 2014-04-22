@@ -35,6 +35,10 @@ def api_call(url):
                 continue
             print "Cannot make api call: %s" % e
             return (None, e)
+        except socket.timeout:
+            continue
+        except socket.error:
+            continue
         
         try:
             data = json.loads(f.read())
