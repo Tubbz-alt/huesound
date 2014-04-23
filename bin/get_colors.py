@@ -4,6 +4,7 @@
 import sys
 sys.path.append("../huesound")
 
+import httplib
 import urllib2
 import psycopg2
 import subprocess
@@ -58,6 +59,8 @@ while True:
             continue
         except urllib2.URLError, e:
             print "Cannot fetch open page %s: %s" % (row[1], e)
+            continue
+        except httplib.BadStatusLine:
             continue
         except socket.timeout:
             print "timeout fetching album page"

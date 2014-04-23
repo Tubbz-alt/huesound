@@ -61,10 +61,10 @@ while True:
             else:
                 print "Weird artist!"
                 print json.dumps(data, indent=4, sort_keys=True)
-            continue
+                continue
 
         artist_id = artist.get_or_insert_artist(conn2, artist_uri)
-        if artist_id > 0:
+        if artist_id >= 0:
             print "%s -> %d" % (artist_uri, artist_id)
 
             sql = '''UPDATE album SET artist = %s WHERE id = %s''';
@@ -76,6 +76,6 @@ while True:
                 print "rollback!"
                 conn2.rollback()
 
-        sleep(.9)
+        sleep(.25)
 
 print "Processed all albums."
