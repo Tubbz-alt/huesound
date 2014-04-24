@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'layout' %}
 {% block body %}
   <h2>Spotify cover art by color</h2>
   <ul>
