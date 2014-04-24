@@ -26,7 +26,7 @@ coverHack = {
     colorWheelOffsetX : 0,
     colorWheelDia : 0,
     playerStart : '<iframe src="https://embed.spotify.com/?uri=',
-    playerEnd : '" width="300" height="80" frameborder="0" allowtransparency="true"></iframe>',
+    playerEnd : '" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>',
     fetchCovers: function(color, offset) {
             console.log("color: " + color);
             if (offset < 0)
@@ -223,7 +223,6 @@ coverHack = {
                     $('.playbtn', albumCover).fadeIn(500);
             },
             resize: function() {
-                    $("#color-wheel").height($(window).height() - ($("#instructions-container").height() + $("#footer-container").height() + 80 ));
                     album_size = coverHack.view.imageSize();
                     for(i = 0; i < coverHack.albumCount; i++) {
                         $("#img" + i).css("width", album_size);
@@ -235,9 +234,9 @@ coverHack = {
             calculateColorWheelDims: function () {
                     var w = $("#color-wheel").width();
                     var h = $("#color-wheel").height();
-                    var margin = 40;
+                    var margin = 30;
                     coverHack.colorWheelDia = w / 2 - margin;
-                    coverHack.colorWheelOffsetY = coverHack.colorWheelDia + margin;
+                    coverHack.colorWheelOffsetY = coverHack.colorWheelDia + (margin / 2);
                     coverHack.colorWheelOffsetX = coverHack.colorWheelDia + margin;
             },
             createColorWheel: function() {

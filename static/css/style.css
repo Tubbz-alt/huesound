@@ -41,8 +41,8 @@
 }
 
 #player {
-  margin-left: 40px;
-  height: 80px;
+  margin: 0px 40px 20px 40px;
+  height: 420px;
 }
 
 /* The following section is taken from Ian Lunn's Hover CSS: https://github.com/IanLunn/Hover */
