@@ -31,13 +31,15 @@ def get_images(color, count, country, offset):
     green = int(color[2:4], 16) 
     blue = int(color[4:6], 16) 
 
-    # TODO: Add country support
     query = """SELECT album_uri, image_id
-                 FROM album
+                 FROM album a, album_country ac, country c
+                WHERE ac.album = a.id 
+                  AND ac.country = c.id
+                  AND c.code = %s
              ORDER BY cube_distance(color, %s) 
                 LIMIT %s
                OFFSET %s"""
-    data = (cube.Cube(red, green, blue), count, offset)
+    data = (country, cube.Cube(red, green, blue), count, offset)
     cur.execute(query, data)
 
     result = []

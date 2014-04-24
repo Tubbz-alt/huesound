@@ -5,6 +5,11 @@ import json
 from time import sleep
 import artist, config, countries, api_call
 
+def fetch_json_for_uris(album_uris):
+    uri_list = []
+    [ uri_list.append(uri[14:]) for uri in album_uris]
+    return api_call.api_call("https://api.spotify.com/v1/albums/?ids=%s" % ",".join(uri_list))
+
 def fetch_json_for_uri(album_uri):
     return api_call.api_call("http://ws.spotify.com/lookup/1/?uri=%s" % album_uri)
 

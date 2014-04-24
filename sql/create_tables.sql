@@ -1,16 +1,18 @@
 BEGIN;
 
 CREATE TABLE album (
-    id         SERIAL,
-    artist     INTEGER NOT NULL, -- references artist
-    album_uri  TEXT,
-    red        INTEGER,
-    green      INTEGER,
-    blue       INTEGER,
-    color      CUBE,
-    image_id   TEXT DEFAULT NULL,
-    popularity REAL DEFAULT -1.0,
-    last_updated  TIMESTAMP WITH TIME ZONE DEFAULT to_timestamp((0)::double precision)
+    id           SERIAL,
+    artist       INTEGER NOT NULL, -- references artist
+    album_uri    TEXT,
+    red          INTEGER,
+    green        INTEGER,
+    blue         INTEGER,
+    color        CUBE,
+    image_id     TEXT DEFAULT NULL,
+    popularity   REAL DEFAULT -1.0,
+    last_updated TIMESTAMP WITH TIME ZONE DEFAULT to_timestamp((0)::double precision),
+    type         TEXT,
+    year         INTEGER
 );
 
 CREATE TABLE artist (
@@ -33,6 +35,9 @@ CREATE TABLE album_country (
 
 CREATE UNIQUE INDEX album_ndx_id ON album (id);
 CREATE UNIQUE INDEX album_ndx_album_uri ON album (album_uri);
+CREATE INDEX album_ndx_popularity ON album (popularity);
+CREATE INDEX album_ndx_type ON album (type);
+CREATE INDEX album_ndx_year ON album (year);
 
 CREATE UNIQUE INDEX artist_ndx_id ON artist (id);
 CREATE UNIQUE INDEX artist_ndx_artist_uri ON artist (artist_uri);
