@@ -18,7 +18,7 @@ app = Flask(__name__,
 
 register_adapter(cube.Cube, cube.adapt_cube)
 
-def get_images(color, count, country, offset):
+def get_images(color, count, country, year, offset):
 
     try:
         conn = psycopg2.connect(config.PG_CONNECT)
@@ -30,16 +30,30 @@ def get_images(color, count, country, offset):
     red = int(color[0:2], 16) 
     green = int(color[2:4], 16) 
     blue = int(color[4:6], 16) 
-
-    query = """SELECT album_uri, image_id
-                 FROM album a, album_country ac, country c
-                WHERE ac.album = a.id 
-                  AND ac.country = c.id
-                  AND c.code = %s
-             ORDER BY cube_distance(color, %s) 
-                LIMIT %s
-               OFFSET %s"""
-    data = (country, cube.Cube(red, green, blue), count, offset)
+    if year == "all":
+        query = """SELECT album_uri, image_id
+                     FROM album a, album_country ac, country c
+                    WHERE ac.album = a.id 
+                      AND ac.country = c.id
+                      AND c.code = %s
+                 ORDER BY cube_distance(color, %s) 
+                    LIMIT %s
+                   OFFSET %s"""
+        data = (country, cube.Cube(red, green, blue), count, offset)
+    else:
+        print year
+        begin, end = year.split("-")
+        query = """SELECT album_uri, image_id
+                     FROM album a, album_country ac, country c
+                    WHERE ac.album = a.id 
+                      AND ac.country = c.id
+                      AND c.code = %s
+                      AND year >= %s
+                      AND year <= %s
+                 ORDER BY cube_distance(color, %s) 
+                    LIMIT %s
+                   OFFSET %s"""
+        data = (country, begin, end, cube.Cube(red, green, blue), count, offset)
     cur.execute(query, data)
 
     result = []
@@ -48,21 +62,21 @@ def get_images(color, count, country, offset):
 
     return result
 
-@app.route('/<color>/<int:count>/<country>/j')
-def images_json(color, count, country):
-    return "mbalbums(" + json.dumps(get_images(color, count, country, 0)) + ")"
+@app.route('/<color>/<int:count>/<country>/<year>/j')
+def images_json(color, count, country, year):
+    return "mbalbums(" + json.dumps(get_images(color, count, country, year, 0)) + ")"
 
-@app.route('/<color>/<int:count>/<country>/j/<int:offset>')
-def images_json_paged(color, count, country, offset):
-    return "mbalbums(" + json.dumps(get_images(color, count, country, offset)) + ")"
+@app.route('/<color>/<int:count>/<country>/<year>/j/<int:offset>')
+def images_json_paged(color, count, country, year, offset):
+    return "mbalbums(" + json.dumps(get_images(color, count, country, year, offset)) + ")"
 
-@app.route('/<color>/<int:count>/<country>/h')
-def images_html(color, count, country):
-    return render_template('icons', data=get_images(color, count, country, 0))
+@app.route('/<color>/<int:count>/<country>/<year>/h')
+def images_html(color, count, country, year):
+    return render_template('icons', data=get_images(color, count, country, year, 0))
 
-@app.route('/<color>/<int:count>/<country>/h/<int:offset>')
-def images_html_paged(color, count, country, offset):
-    return render_template('icons', data=get_images(color, count, country, offset))
+@app.route('/<color>/<int:count>/<country>/h/<int:offset>/<int:year>')
+def images_html_paged(color, count, country, year, offset):
+    return render_template('icons', data=get_images(color, count, country, year, offset))
 
 @app.route('/')
 def index():

@@ -19,8 +19,8 @@ coverHack = {
     local: false,
     imgUrlBase: "",
     data: null,
-    albumClicked : false,
     r_page: null,
+    hideLogo : false,
     pie : null,
     colorWheelOffsetY : 0,
     colorWheelOffsetX : 0,
@@ -28,7 +28,14 @@ coverHack = {
     playerStart : '<iframe src="https://embed.spotify.com/?uri=',
     playerEnd : '" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>',
     fetchCovers: function(color, offset) {
-            console.log("color: " + color);
+            if (!coverHack.hideLogo)
+            {
+                coverHack.hideLogo = true;
+                h = $("#instructions").height();
+                $("#instructions").css("display", "none")
+                $("#filters").height(h);
+                $("#filters").css("display", "block")
+            }
             if (offset < 0)
                 offset = 0;
             coverHack.lastColor = color;
@@ -46,10 +53,12 @@ coverHack = {
             coverHack.view.changeBG(color);
             color = color.replace('#', '');
             coverHack.processing = true;
-            url = "/%color%/" + coverHack.albumCount + "/" + coverHack.country + "/j/%offset%";
+            year = $("#year-select").val();
+            console.log(year);
+            url = "/%color%/" + coverHack.albumCount + "/" + coverHack.country + "/%year%/j/%offset%";
             url = url.replace(/%color%/, color),
             url = url.replace(/%offset%/, offset),
-            console.log(url);
+            url = url.replace(/%year%/, year),
             $.ajax({
                     url: url, 
                     timeout: 5000,
@@ -269,7 +278,6 @@ coverHack = {
     },
     album_clicked: function(index) {
         album_uri = coverHack.data[index].album_uri;
-        //coverHack.albumClicked = true;
         $("#player").html(coverHack.playerStart + album_uri + coverHack.playerEnd);
     },
     next_page: function() {
@@ -282,11 +290,5 @@ coverHack = {
             coverHack.country = country;
             $(window).resize(coverHack.view.resize);
             coverHack.view.resize();
-            /* $('.play', $('#albums')).live("click", function(e) {
-                if (!coverHack.albumClicked)
-                    coverHack.play_clicked($(this).data('album_uri'));
-                coverHack.albumClicked = false;
-            }); */
-            $('#play').attr("src", "");
     }
 };
