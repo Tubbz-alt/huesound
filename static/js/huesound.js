@@ -1,12 +1,6 @@
-var sp = getSpotifyApi(1);
-var models, views;
-
-exports.init = init;
 function init() 
 {
-    models = sp.require('sp://import/scripts/api/models');
-    views = sp.require("sp://import/scripts/api/views");
-    coverHack.init(models.session.country);
+    coverHack.init("US");
 }
 
 mbalbums = function(data) 
@@ -24,7 +18,6 @@ coverHack = {
     processing: false,
     local: false,
     imgUrlBase: "",
-    albumAPI: "",
     data: null,
     albumClicked : false,
     r_page: null,
@@ -51,9 +44,10 @@ coverHack = {
             coverHack.view.changeBG(color);
             color = color.replace('#', '');
             coverHack.processing = true;
-            url = coverHack.albumAPI;
+            url = "/%color%/" + coverHack.albumCount + "/" + coverHack.country + "/j/%offset%";
             url = url.replace(/%color%/, color),
             url = url.replace(/%offset%/, offset),
+            console.log(url);
             $.ajax({
                     url: url, 
                     timeout: 5000,
@@ -66,6 +60,7 @@ coverHack = {
     processCovers: function(data) {
             var tracks = [], i, j = 0;
 
+            console.log("callback!");
             coverHack.processing = false;
             coverHack.data = data;
             coverHack.view.showAlbums();
@@ -252,25 +247,16 @@ coverHack = {
                     }
 
                     coverHack.r_page = Raphael("color-wheel");
-                    pie = coverHack.r_page.g.piechart(coverHack.colorWheelOffsetX, 
-                                                          coverHack.colorWheelOffsetY, 
-                                                          coverHack.colorWheelDia, 
-                                                          [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], 
-                                                          {colors: coverHack.allColors});
+                    pie = coverHack.r_page.piechart(coverHack.colorWheelOffsetX, 
+                                                    coverHack.colorWheelOffsetY, 
+                                                    coverHack.colorWheelDia, 
+                                                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], 
+                                                    {colors: coverHack.allColors});
                     pie.hover(function () {
                             this.sector.stop();
                             this.sector.scale(1.1, 1.1, this.cx, this.cy);
-                            if (this.label) {
-                                    this.label[0].stop();
-                                    this.label[0].scale(1.5);
-                                    this.label[1].attr({"font-weight": 800});
-                            }
                     }, function () {
-                            this.sector.animate({scale: [1, 1, this.cx, this.cy]}, 500, "bounce");
-                            if (this.label) {
-                                    this.label[0].animate({scale: 1}, 500, "bounce");
-                                    this.label[1].attr({"font-weight": 400});
-                            }
+                            this.sector.animate({ transform: 's1 1 ' + this.cx + ' ' + this.cy }, 500, "bounce");
                     });
                     pie.click(function() {
                             offset = 0;
@@ -299,8 +285,9 @@ coverHack = {
         coverHack.fetchCovers(coverHack.lastColor, coverHack.lastOffset - coverHack.albumCount);
     },
     init: function(country) {
+            coverHack.country = country;
             $(window).resize(coverHack.view.resize);
-            coverHack.albumAPI = "http://huesound.mbsandbox.org/%color%/" + coverHack.albumCount + "/" + country + "/j/%offset%";
+            coverHack.view.resize();
             $('.play', $('#albums')).live("click", function(e) {
                 if (!coverHack.albumClicked)
                     coverHack.play_clicked($(this).data('album_uri'));
