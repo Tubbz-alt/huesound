@@ -48,11 +48,11 @@ def get_images(color, count, country, offset):
 
 @app.route('/<color>/<int:count>/<country>/j')
 def images_json(color, count, country):
-    return json.dumps(get_images(color, count, country, 0))
+    return "mbalbums(" + json.dumps(get_images(color, count, country, 0)) + ")"
 
 @app.route('/<color>/<int:count>/<country>/j/<int:offset>')
 def images_json_paged(color, count, country, offset):
-    return json.dumps(get_images(color, count, country, offset))
+    return "mbalbums(" + json.dumps(get_images(color, count, country, offset)) + ")"
 
 @app.route('/<color>/<int:count>/<country>/h')
 def images_html(color, count, country):

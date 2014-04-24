@@ -32,6 +32,8 @@
                 <div id="color-wheel"></div>
             </div>
         </div>
+        <div class="row-fluid" id="player">
+        </div>
         <div class="row-fluid" id="footer-container">
             <div class="span12" id="footer">
                 <small>
@@ -41,7 +43,7 @@
             </div>
         </div>
     </div>
-    <div class="span8" id="albumsContainer" style="background-color: #fbb">
+    <div class="span8" id="albumsContainer">
         <div id="progress"></div>
         <ul id="albums"></ul>
     </div>

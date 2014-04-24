@@ -25,6 +25,8 @@ coverHack = {
     colorWheelOffsetY : 0,
     colorWheelOffsetX : 0,
     colorWheelDia : 0,
+    playerStart : '<iframe src="https://embed.spotify.com/?uri=',
+    playerEnd : '" width="300" height="80" frameborder="0" allowtransparency="true"></iframe>',
     fetchCovers: function(color, offset) {
             console.log("color: " + color);
             if (offset < 0)
@@ -54,13 +56,14 @@ coverHack = {
                     dataType: "jsonp",
                     jsonp: false,
                     jsonpCallback: "mbalbums",
-                    cache: false
+                    cache: false,
+                    error : function () { console.log("Ajax error"); }
+
             });
     },
     processCovers: function(data) {
             var tracks = [], i, j = 0;
 
-            console.log("callback!");
             coverHack.processing = false;
             coverHack.data = data;
             coverHack.view.showAlbums();
@@ -177,7 +180,7 @@ coverHack = {
                     console.log("w: " + w + " h: " + h);
             },
             albumTpl: '<li id="%i%">' 
-                     +'  <img src="spotify:image:%image_id%" id="img%i%"' 
+                     +'  <img src="http://o.scdn.co/300/%image_id%" id="img%i%" class="grow"' 
                      +'       style="width: %size%px; height: %size%px;" onclick="coverHack.album_clicked(%i%)">'
                      +'</li>',
             showAlbums: function() {
@@ -220,7 +223,7 @@ coverHack = {
                     $('.playbtn', albumCover).fadeIn(500);
             },
             resize: function() {
-                    $("#color-wheel").height($(window).height() - ($("#instructions-container").height() + $("#footer-container").height()));
+                    $("#color-wheel").height($(window).height() - ($("#instructions-container").height() + $("#footer-container").height() + 80 ));
                     album_size = coverHack.view.imageSize();
                     for(i = 0; i < coverHack.albumCount; i++) {
                         $("#img" + i).css("width", album_size);
@@ -267,16 +270,8 @@ coverHack = {
     },
     album_clicked: function(index) {
         album_uri = coverHack.data[index].album_uri;
-        window.location.href = album_uri;
-        coverHack.albumClicked = true;
-    },
-    play_clicked: function(album_uri) {
-        models.Album.fromURI(album_uri, function(album) 
-        {
-            models = sp.require("sp://import/scripts/api/models");
-            player = models.player;
-            player.play(album.tracks[0], album, 0);
-        });
+        //coverHack.albumClicked = true;
+        $("#player").html(coverHack.playerStart + album_uri + coverHack.playerEnd);
     },
     next_page: function() {
         coverHack.fetchCovers(coverHack.lastColor, coverHack.lastOffset + coverHack.albumCount);
@@ -288,11 +283,11 @@ coverHack = {
             coverHack.country = country;
             $(window).resize(coverHack.view.resize);
             coverHack.view.resize();
-            $('.play', $('#albums')).live("click", function(e) {
+            /* $('.play', $('#albums')).live("click", function(e) {
                 if (!coverHack.albumClicked)
                     coverHack.play_clicked($(this).data('album_uri'));
                 coverHack.albumClicked = false;
-            });
+            }); */
             $('#play').attr("src", "");
     }
 };

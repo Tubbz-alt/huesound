@@ -26,7 +26,7 @@
 }
 
 #albumsContainer #progress {
-  background-image: url("/img/ajax-loader.gif");
+  background-image: url("/static/img/ajax-loader.gif");
   display: block;
 }
 
@@ -40,3 +40,24 @@
   margin: 5px;
 }
 
+#player {
+  margin-left: 40px;
+  height: 80px;
+}
+
+/* The following section is taken from Ian Lunn's Hover CSS: https://github.com/IanLunn/Hover */
+/* Grow */
+.grow {
+  display: inline-block;
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  -webkit-transition-property: transform;
+  transition-property: transform;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+}
+.grow:hover, .grow:focus, .grow:active {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
