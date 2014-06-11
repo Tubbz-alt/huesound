@@ -12,6 +12,8 @@ coverHack = {
     allColors: ['#000000', '#CC3333', '#FF3333', '#FF6633', '#FF9933', '#FFCC66', '#FFFF33', '#CCCC33', '#99CC33', '#33CC33', '#009933', '#006633', '#33CC99', '#33CCFF', '#3366CC', '#333399', '#000066', '#663399', '#990099', '#990066', '#FF0066', '#CCCC99', '#996666', '#996633', '#663333', '#CC9966', '#996633', '#663300', '#333300', '#330000', '#333333', '#666666'],
     // 30 gives us a 6x5 grid, looks nice
     albumCount: 30,
+    albumCols : 5,
+    albumRows : 6,
     lastColor:"",
     lastOffset : 0,
     firstRun: true,
@@ -25,8 +27,11 @@ coverHack = {
     colorWheelOffsetY : 0,
     colorWheelOffsetX : 0,
     colorWheelDia : 0,
+    rtime : new Date(1, 1, 2000, 12,00,00),
+    timeout : false,
+    delta : 200,
     playerStart : '<iframe src="https://embed.spotify.com/?uri=',
-    playerEnd : '" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>',
+    playerEnd : '" width="250" height="380" frameborder="0" allowtransparency="true"></iframe>',
     fetchCovers: function(color, offset) {
             if (!coverHack.hideLogo)
             {
@@ -54,14 +59,16 @@ coverHack = {
             color = color.replace('#', '');
             coverHack.processing = true;
             year = $("#year-select").val();
+            type = $("#type-select").val();
             console.log(year);
-            url = "/%color%/" + coverHack.albumCount + "/" + coverHack.country + "/%year%/j/%offset%";
+            url = "/%color%/" + coverHack.albumCount + "/" + coverHack.country + "/%year%/%type%/j/%offset%";
             url = url.replace(/%color%/, color),
             url = url.replace(/%offset%/, offset),
             url = url.replace(/%year%/, year),
+            url = url.replace(/%type%/, type),
             $.ajax({
                     url: url, 
-                    timeout: 5000,
+                    timeout: 10000,
                     dataType: "jsonp",
                     jsonp: false,
                     jsonpCallback: "mbalbums",
@@ -166,14 +173,20 @@ coverHack = {
     },
     view: {
             imageSize :function() {
+                    // Review this whole code. Simplify. Assume 5 wide and infinite scroll
                     console.log("screen w: " + $(window).width() + " screen h: " + $(window).height() + "col " + $("#left-column").width());
                     w = $(window).width() - $("#left-column").width();
                     h = $(window).height();
                     if (w < h)
+                    {
                         size = Math.floor((w - (10 * 6) - 15) / 6);
+                        console.log("max w: " + w + " max h: " + h + " album s: " + size);
+                    }
                     else
+                    {
                         size = Math.floor((h - (10 * 5) - 15) / 5);
-                    console.log("max w: " + w + " max h: " + h + " album s: " + size);
+                        console.log("max w: " + w + " max h: " + h + " album s: " + size);
+                    }
                     return size;
             },
             setContainerSize: function(image_size) {
@@ -231,19 +244,36 @@ coverHack = {
                     albumCover.append('<div class="playbtn"></div>');
                     $('.playbtn', albumCover).fadeIn(500);
             },
-            resize: function() {
-                    album_size = coverHack.view.imageSize();
-                    for(i = 0; i < coverHack.albumCount; i++) {
-                        $("#img" + i).css("width", album_size);
-                        $("#img" + i).css("height", album_size);
-                    }
-                    coverHack.view.setContainerSize(album_size);
-                    coverHack.view.createColorWheel();
+            resizeEvent: function() {
+                coverHack.rtime = new Date();
+                if (coverHack.timeout === false) {
+                    coverHack.view.resizeStart();
+                    coverHack.timeout = true;
+                    setTimeout(coverHack.view.resizeEndEvent, coverHack.delta);
+                }
+            },
+            resizeEndEvent : function() {
+                if (new Date() - coverHack.rtime < coverHack.delta) {
+                    setTimeout(coverHack.view.resizeEndEvent, coverHack.delta);
+                } else {
+                    coverHack.timeout = false;
+                    coverHack.view.resizeEnd();
+                }               
+            },
+            resizeStart : function () {
+            },
+            resizeEnd : function () {
+                album_size = coverHack.view.imageSize();
+                for(i = 0; i < coverHack.albumCount; i++) {
+                    $("#img" + i).css("width", album_size);
+                    $("#img" + i).css("height", album_size);
+                }
+                coverHack.view.setContainerSize(album_size);
+                coverHack.view.createColorWheel();
             },
             calculateColorWheelDims: function () {
                     var w = $("#color-wheel").width();
-                    var h = $("#color-wheel").height();
-                    var margin = 30;
+                    var margin = 40;
                     coverHack.colorWheelDia = w / 2 - margin;
                     coverHack.colorWheelOffsetY = coverHack.colorWheelDia + (margin / 2);
                     coverHack.colorWheelOffsetX = coverHack.colorWheelDia + margin;
@@ -255,8 +285,10 @@ coverHack = {
                         delete(coverHack.r_page);
                         coverHack.pie = null;
                         coverHack.r_page = null;
+                        $("#color-wheel").empty();
                     }
 
+                    $("#color-wheel").height($("#color-wheel").width());
                     coverHack.r_page = Raphael("color-wheel");
                     pie = coverHack.r_page.piechart(coverHack.colorWheelOffsetX, 
                                                     coverHack.colorWheelOffsetY, 
@@ -288,7 +320,7 @@ coverHack = {
     },
     init: function(country) {
             coverHack.country = country;
-            $(window).resize(coverHack.view.resize);
-            coverHack.view.resize();
+            $(window).resize(coverHack.view.resizeEvent);
+            coverHack.view.resizeEvent();
     }
 };

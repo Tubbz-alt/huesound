@@ -28,7 +28,7 @@
                     Click an album cover to load the album.</p>
                 </div>
                 <div id="filters">
-                    Filter:
+                    <span class="filter-text">Filter:</span>
                     <select id="year-select">
                        <option value="all">all</option>
                        <option value="2010-2019">10s</option>
@@ -38,13 +38,20 @@
                        <option value="1970-1979">70s</option>
                        <option value="1960-1969">60s</option>
                     </select>
+                    <select id="type-select">
+                       <option value="all">all</option>
+                       <option value="album">album</option>
+                       <option value="single">single</option>
+                       <option value="compilation">compilation</option>
+                    </select>
                     <select id="country-select">
+                       <option value="ES">ES</option>
+                       <option value="US">US</option>
                        <option value="AT">AT</option>
                        <option value="BE">BE</option>
                        <option value="DE">DE</option>
                        <option value="CA">CA</option>
                        <option value="DK">DK</option>
-                       <option value="ES">ES</option>
                        <option value="FI">FI</option>
                        <option value="FR">FR</option>
                        <option value="IR">IR</option>
@@ -55,7 +62,6 @@
                        <option value="PO">PO</option>
                        <option value="SE">SE</option>
                        <option value="SZ">SZ</option>
-                       <option value="US">US</option>
                        <option value="CH">CH</option>
                     </select>
                 </div>

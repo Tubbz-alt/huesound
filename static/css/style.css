@@ -1,3 +1,8 @@
+.body {
+    min-width: 800px;
+    width: auto !important;
+}
+
 #instructions-container {
     text-align: center;
 }
@@ -16,12 +21,20 @@
     display: none;
 }
 
+.filter-text {
+    font-size: 15pt;
+}
+
 #year-select {
     width: 75px;
 }
 
 #country-select {
-    width: 75px;
+    width: 65px;
+}
+
+#type-select {
+    width: 85px;
 }
 
 #color-wheel {
@@ -48,7 +61,8 @@
 }
 
 #player {
-  margin: 0px 40px 20px 40px;
+  min-width: 260px;
+  text-align: center;
   height: 420px;
 }
 
