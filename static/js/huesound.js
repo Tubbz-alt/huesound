@@ -60,7 +60,6 @@ coverHack = {
             coverHack.processing = true;
             year = $("#year-select").val();
             type = $("#type-select").val();
-            console.log(year);
             url = "/%color%/" + coverHack.albumCount + "/" + coverHack.country + "/%year%/%type%/j/%offset%";
             url = url.replace(/%color%/, color),
             url = url.replace(/%offset%/, offset),
@@ -174,18 +173,15 @@ coverHack = {
     view: {
             imageSize :function() {
                     // Review this whole code. Simplify. Assume 5 wide and infinite scroll
-                    console.log("screen w: " + $(window).width() + " screen h: " + $(window).height() + "col " + $("#left-column").width());
                     w = $(window).width() - $("#left-column").width();
                     h = $(window).height();
                     if (w < h)
                     {
                         size = Math.floor((w - (10 * 6) - 15) / 6);
-                        console.log("max w: " + w + " max h: " + h + " album s: " + size);
                     }
                     else
                     {
                         size = Math.floor((h - (10 * 5) - 15) / 5);
-                        console.log("max w: " + w + " max h: " + h + " album s: " + size);
                     }
                     return size;
             },
@@ -199,7 +195,6 @@ coverHack = {
                     max_h = $(window).height();
                     if (h > max_h) h = max_h;
                     $("#albumsContainer").height(h);
-                    console.log("w: " + w + " h: " + h);
             },
             albumTpl: '<li id="%i%">' 
                      +'  <img src="http://o.scdn.co/300/%image_id%" id="img%i%" class="grow"' 
